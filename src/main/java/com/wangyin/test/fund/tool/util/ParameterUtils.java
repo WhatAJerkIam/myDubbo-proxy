@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.json.JSONObject;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -195,6 +196,10 @@ public class ParameterUtils {
         if (TypeUtils.isMap(source))
             return (Map) source;
 
+        if (source instanceof String && JSONUtils.mayBeJSON(String.valueOf(source))) {
+            return JSONObject.fromObject(source);
+        }
+
         Map map = new HashMap<String, Object>();
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(source.getClass());
@@ -212,7 +217,7 @@ public class ParameterUtils {
             }
 
         } catch (Exception e) {
-            System.out.println("transMap2Bean Error " + e);
+            System.out.println("Bean2Map Error " + e);
         }
         return map;
     }
